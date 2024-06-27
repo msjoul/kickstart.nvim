@@ -91,7 +91,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -101,8 +101,9 @@ vim.g.have_nerd_font = false
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
+vim.opt.signcolumn = "number"
+vim.o.statuscolumn = "%s %l %r "
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = "a"
@@ -189,9 +190,11 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+vim.keymap.set("n", "<C-q>", "<C-6>", { desc = "Go to alternative buffer" })
 
 vim.diagnostic.config({
   virtual_text = false,
+  signs = false
 })
 
 -- [[ Basic Autocommands ]]
@@ -557,7 +560,7 @@ require("lazy").setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        clangd = {},
+        clangd = { mason = false, fallbackFlags = {"--std=c++20"} },
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -782,6 +785,52 @@ require("lazy").setup({
     event = "VimEnter",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = { signs = false },
+  },
+  {
+    "folke/zen-mode.nvim",
+    opts = {
+      window = {
+      -- backdrop = 0.95, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
+      -- height and width can be:
+      -- * an absolute number of cells when > 1
+      -- * a percentage of the width / height of the editor when <= 1
+      -- * a function that returns the width or the height
+      width = 120, -- width of the Zen window
+      height = 1, -- height of the Zen window
+      -- by default, no options are changed for the Zen window
+      -- uncomment any of the options below, or add other vim.wo options you want to apply
+      options = {
+        -- signcolumn = "no", -- disable signcolumn
+        -- number = false, -- disable number column
+        -- relativenumber = false, -- disable relative numbers
+        -- cursorline = false, -- disable cursorline
+        -- cursorcolumn = false, -- disable cursor column
+        -- foldcolumn = "0", -- disable fold column
+        -- list = false, -- disable whitespace characters
+      },
+    },
+    plugins = {
+      -- disable some global vim options (vim.o...)
+      -- comment the lines to not apply the options
+      options = {
+        enabled = true,
+        ruler = false, -- disables the ruler text in the cmd line area
+        showcmd = false, -- disables the command in the last line of the screen
+        -- you may turn on/off statusline in zen mode by setting 'laststatus' 
+        -- statusline will be shown only if 'laststatus' == 3
+        laststatus = 0, -- turn off the statusline in zen mode
+      },
+      twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
+      gitsigns = { enabled = false }, -- disables git signs
+      tmux = { enabled = false }, -- disables the tmux statusline
+      },
+      -- callback where you can add custom code when the Zen window opens
+      on_open = function(win)
+      end,
+      -- callback where you can add custom code when the Zen window closes
+      on_close = function()
+      end,
+    }
   },
 
   { -- Collection of various small independent plugins/modules
